@@ -9,4 +9,4 @@ namespace: goapp
 images:
 - name: goapp
   newName: imgabreuw/deploy-continuo-com-gitops-e-argocd
-  newTag: 121af59ee41dcc87b4769afc49322676b374c7b9
+  newTag: 1ccd2f191bfcd16fd181a75e0cf28530375d4810
