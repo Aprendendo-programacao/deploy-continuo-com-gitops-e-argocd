@@ -152,3 +152,43 @@ func main() {
     * Aplicar as configurações no cluster Kubernetes
 
       * `$ kustomize build k8s`
+
+### Github Action
+
+* Arquivo de configuração
+
+  ```yaml
+  name: cd
+
+  on:
+    push:
+      branches: [master]
+
+  jobs:
+    build:
+      name: Build
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout
+          uses: actions/checkout@v2
+
+        - name: build imagem and push to docker hub
+          uses: docker/build-push-action@v1.1.0
+          with:
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_PASSWORD }}
+            repository: imgabreuw/deploy-continuo-com-gitops-e-argocd
+            tags: ${{ github.sha }}, latest
+  ```
+
+* Criar um repositório no Github
+
+* Definir as secrets no repositório
+
+  * Settings > Secrets > botão `New repository secret` > informar a chave e o valor do *secret*
+
+* OBS: criar um *access token* no Docker Hub (para a secret `DOCKER_PASSWORD`)
+
+  * No Docker Hub > ícone do usuário > Account Settings > Security > botão `New Access Token` > informar o nome do token (`Access Token Description`) > botão `Generate`
+
+* Enviar o código para o repositório GitHub
