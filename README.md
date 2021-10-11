@@ -286,6 +286,14 @@ func main() {
 
   * Para sincronizar e aplicar as configurações do repositório para o cluster Kubernetes -> clicar no botão `Sync` > botão `Synchronize`
 
+* Realizar rollback de um cluster Kubernetes no ArgoCD
+
+  * Clicar no Botão `History and rollback` > escolher a versão do cluster Kubernetes a ser restaurada
+
+    ![](./docs/rollback-no-argocd.png)
+
+  * Clicar no botão `Rollback` > `Ok`
+
 ### Resultado final
 
 ![](./docs/resultado-final-deploy-da-aplicacao-com-argocd.png)
@@ -329,3 +337,9 @@ func main() {
   ![](./docs/aplicacao-antes-da-sincronizacao.png)
 
   > Como não foi realizado a sincronização, o cluster Kubernetes está utilizando a versão antiga da imagem (com `Hello World`)
+
+* Acessar http://localhost:9000/ (após a sincronização no ArgoCD)
+
+  ![](./docs/aplicacao-apos-a-sincronizacao.png)
+
+  > IMPORTANTE: fazer o binding de portas novamente (`$ kubectl port-forward svc/goapp -n goapp 9000:8080`), pois ao aplicar as novas configurações o cluster Kubernetes é recriado.
