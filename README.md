@@ -289,3 +289,43 @@ func main() {
 ### Resultado final
 
 ![](./docs/resultado-final-deploy-da-aplicacao-com-argocd.png)
+
+* Verificar os Pods criados pelo ArgoCD
+
+  * Sintaxe: `$ kubectl get pods -n <namespace>`
+
+  * Exemplo
+  
+    * Comando: `$ kubectl get pods -n goapp`
+
+    * Saída
+
+      ```
+      NAME                    READY   STATUS    RESTARTS   AGE
+      goapp-74d748487-6kr57   1/1     Running   0          5m30s
+      ```
+
+* Verificar os Services criados pelo ArgoCD
+
+  * Sintaxe: `$ kubectl get svc -n <namespace>`
+
+  * Exemplo
+  
+    * Comando: `$ kubectl get svc -n goapp`
+
+    * Saída
+
+      ```
+      NAME    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+      goapp   ClusterIP   10.96.58.254   <none>        8080/TCP   6m57s
+      ```
+
+* Binding de portas (entre Service e máquina local) para acessar o container
+
+  * `$ kubectl port-forward svc/goapp -n goapp 9000:8080`
+
+* Acessar http://localhost:9000/ (antes da sincronização no ArgoCD)
+
+  ![](./docs/aplicacao-antes-da-sincronizacao.png)
+
+  > Como não foi realizado a sincronização, o cluster Kubernetes está utilizando a versão antiga da imagem (com `Hello World`)
