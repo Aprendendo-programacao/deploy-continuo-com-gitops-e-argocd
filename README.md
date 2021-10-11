@@ -155,7 +155,7 @@ func main() {
 
 ### Github Action
 
-* Arquivo de configuração
+* Action de build da aplicação
 
   ```yaml
   name: cd
@@ -170,7 +170,7 @@ func main() {
       runs-on: ubuntu-latest
       steps:
         - name: checkout
-          uses: actions/checkout@v2
+          uses: actions/checkout@v2 # baixa o código de repositório
 
         - name: build imagem and push to docker hub
           uses: docker/build-push-action@v1.1.0
@@ -192,3 +192,5 @@ func main() {
   * No Docker Hub > ícone do usuário > Account Settings > Security > botão `New Access Token` > informar o nome do token (`Access Token Description`) > botão `Generate`
 
 * Enviar o código para o repositório GitHub
+
+* Action de deploy da aplicação
