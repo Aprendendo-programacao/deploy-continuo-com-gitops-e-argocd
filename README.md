@@ -194,3 +194,98 @@ func main() {
 * Enviar o código para o repositório GitHub
 
 * Action de deploy da aplicação
+
+  ```yaml
+  ...
+
+  jobs:
+    ...
+    deploy:
+      name: Deploy
+      runs-on: ubuntu-latest
+      needs: build
+      steps:
+        - name: checkout
+          uses: actions/checkout@v2
+
+        - name: kustomize
+          uses: imranismail/setup-kustomize@v1
+          with:
+            kustomize_version: v3.6.1
+
+        - name: update k8s
+          run: |
+            cd k8s
+            kustomize edit set image goapp=imgabreuw/deploy-continuo-com-gitops-e-argocd:${{ github.sha }}
+            cat kustomization.yaml
+
+        - name: commit
+          run: |
+            git config --local user.email "action@github.com"
+            git config --local user.name "Deploy Action"
+            git commit -am "change image tag"
+
+        - name: push
+          uses: ad-m/github-push-action@master
+  ```
+
+### [ArgoCD](https://argo-cd.readthedocs.io/en/stable/)
+
+* Instalação do ArgoCD
+
+  * `$ kubectl create namespace argocd && kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml`
+
+* Binding de portas entre a máquina local e o serviço do ArgoCD
+
+  * `$ kubectl port-forward svc/argocd-server -n argocd 8080:443`
+
+* Obter a senha do ArgoCD
+
+  * `$ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d`
+
+* Acessar https://localhost:8080
+
+  * Informar usuário (`admin`) e senha > botão `Sign in`
+
+* Excluir o Deployment e Service
+
+  * `$ kubectl delete deploy goapp` 
+
+  * `$ kubectl delete svc goapp`
+
+* Criar um *namespace* (fazer o deploy com o ArgoCD no namespace `goapp`)
+
+  * `$ kubectl create namespace goapp`
+
+* Criar uma nova aplicação no ArgoCD
+
+  * No painel do ArgoCD (https://localhost:8080/applications) > botão `New App` > informar os seguintes dados
+
+    * `Application Name` = nome da aplicação (no caso, `deploy-continuo-com-gitops-e-argocd`)
+
+    * `Project` = `default`
+
+    * `Repository URL` = repositório no GitHub (no caso, `https://github.com/Aprendendo-programacao/deploy-continuo-com-gitops-e-argocd.git`)
+
+    * `Path` = caminho até os arquivos de configurações do Kubernetes (no caso, `k8s`)
+
+    * `Cluster URL` = url do cluster, basta selecionar a opção sugerida pelo ArgoCD (no caso, https://kubernetes.default.svc)
+
+    * `Namespace` = namespace (o mesmo criado anterior por meio do comando `$ kubectl delete deploy <namespace>`) para fazer o deploy (no caso, `goapp`)
+
+> OBS: verificar se o ArgoCD identificou o *Kustomize*
+
+* Botão `Create`
+
+* Como, anteriormente, foi setado a política de sincronização (*sync policy*) como `manual`, o status de sincronização deve ser de `OutOfSync`, como a mostrado na imagem abaixo
+
+  ![](./docs/argocd-app-out-of-sync.png)
+
+  > OBS: para ver a diferença entre as configurações aplicadas no cluster Kubernetes e as presentes no repositório GitHub, basta clicar no botão `App Diff`
+    ![](./docs/argocd-app-diff.png)
+
+  * Para sincronizar e aplicar as configurações do repositório para o cluster Kubernetes -> clicar no botão `Sync` > botão `Synchronize`
+
+### Resultado final
+
+![](./docs/resultado-final-deploy-da-aplicacao-com-argocd.png)
